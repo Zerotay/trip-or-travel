@@ -1,16 +1,17 @@
 package com.pjt.triptravel.common.response;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -33,7 +34,11 @@ public class ApiResponse<T> {
         return new ApiResponse<>(SUCCESS_STATUS, null, null);
     }
 
-    public static ApiResponse<?> ofFail(BindingResult bindingResult) {
+    public static ApiResponse<?> ofFail(String message) {
+        return new ApiResponse<>(FAIL_STATUS, null, message);
+    }
+
+    public static ApiResponse<?> ofError(BindingResult bindingResult) {
         Map<String, String> errors = new HashMap<>();
 
         List<ObjectError> allErrors = bindingResult.getAllErrors();
@@ -44,10 +49,6 @@ public class ApiResponse<T> {
                 errors.put( error.getObjectName(), error.getDefaultMessage());
             }
         }
-        return new ApiResponse<>(FAIL_STATUS, errors, null);
-    }
-
-    public static ApiResponse<?> ofError(String message) {
-        return new ApiResponse<>(ERROR_STATUS, null, message);
+        return new ApiResponse<>(ERROR_STATUS, errors, null);
     }
 }

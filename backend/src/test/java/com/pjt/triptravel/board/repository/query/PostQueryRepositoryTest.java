@@ -44,6 +44,7 @@ class PostQueryRepositoryTest {
 	private PostQueryRepository postQueryRepository;
 
 	private List<Member> members;
+	private Long boardId;
 	Map<Integer, Long> postIdMap;
 
 	@BeforeEach
@@ -57,6 +58,7 @@ class PostQueryRepositoryTest {
 	void queryTest1_페이징() throws Exception {
 	    // given
 		PostSearchCondition condition = new PostSearchCondition();
+		condition.setBoardId(boardId);
 		Pageable pageable;
 
 		// when
@@ -103,7 +105,8 @@ class PostQueryRepositoryTest {
 	void queryTest2_검색조건() throws Exception {
 		// given
 		PostSearchCondition condition = new PostSearchCondition();
-		condition.setWriter("1");
+		condition.setBoardId(boardId);
+		condition.setWriterNickname("1");
 		condition.setTitle("의");
 		Pageable pageable = PageRequest.of(0, 4);
 
@@ -130,7 +133,8 @@ class PostQueryRepositoryTest {
 	void queryTest4_검색조건_정렬조건() throws Exception {
 		// given
 		PostSearchCondition condition = new PostSearchCondition();
-		condition.setWriter("ter2"); // writer2
+		condition.setBoardId(boardId);
+		condition.setWriterNickname("ter2"); // writer2
 		condition.setOrder(PostSearchOrder.VIEWS_DESC);
 		Pageable pageable = PageRequest.of(0, 10);
 
@@ -168,6 +172,7 @@ class PostQueryRepositoryTest {
 	void queryTest3_정렬조건() throws Exception {
 		// given
 		PostSearchCondition condition = new PostSearchCondition();
+		condition.setBoardId(boardId);
 		condition.setOrder(PostSearchOrder.LIKES_DESC);
 		Pageable pageable = PageRequest.of(0, 10);
 
@@ -210,12 +215,13 @@ class PostQueryRepositoryTest {
 				Member.builder()
 					.email("test" + i + "@test.com")
 					.password("password")
-					.name("writer" + i)
+					.nickname("writer" + i)
 					.build()
 			));
 		}
 
 		Board board = boardRepository.save(new Board("", ""));
+		boardId = board.getId();
 
 		List<Post> posts = new ArrayList<>();
 		posts.add(postRepository.save(getDummyPost("장미의 이름", "dummy content...", board, members.get(0), 10, 30)));

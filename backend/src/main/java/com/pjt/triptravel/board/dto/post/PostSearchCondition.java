@@ -8,8 +8,10 @@ import lombok.Data;
 @Data
 public class PostSearchCondition {
 
+	private Long boardId;
+	
 	private String title;
-	private String writer;
+	private String writerNickname;
 
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	private LocalDate startDate;

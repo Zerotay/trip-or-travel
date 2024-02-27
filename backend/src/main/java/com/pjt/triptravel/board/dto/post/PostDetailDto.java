@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import com.pjt.triptravel.board.dto.comment.CommentDto;
 import com.pjt.triptravel.board.entity.Comment;
 import com.pjt.triptravel.board.entity.Post;
+import com.pjt.triptravel.common.utils.TimeFormatUtil;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -20,34 +21,28 @@ public class PostDetailDto {
 	private Long postId;
 	private String title;
 	private String content;
-	private int commentCount;
 	private int views;
 	private int likes;
+	private Long boardId;
 	private Long writerId;
-	private String writerName;
-	private LocalDateTime registrationDate;
-	private LocalDateTime lastModifiedDate;
-	private List<CommentDto> comments;
+	private String writerNickname;
+	private String writerProfileImageUrl;
+	private String registrationDate;
+	private String lastModifiedDate;
 
-	public static PostDetailDto of(Post post, List<Comment> comments) {
-		List<CommentDto> commentDtos = comments.stream()
-			.filter(comment -> comment.getParent() == null)
-			.map(CommentDto::of)
-			.collect(Collectors.toList());
-		int commentCount = commentDtos.size() + commentDtos.stream().mapToInt(CommentDto::getChildrenCount).sum();
-
+	public static PostDetailDto of(Post post) {
 		return PostDetailDto.builder()
 			.postId(post.getId())
 			.title(post.getTitle())
 			.content(post.getContent())
 			.views(post.getViews())
 			.likes(post.getLikes())
+			.boardId(post.getBoard().getId())
 			.writerId(post.getWriter().getId())
-			.writerName(post.getWriter().getName())
-			.registrationDate(post.getRegistrationDate())
-			.lastModifiedDate(post.getLastModifiedDate())
-			.comments(commentDtos)
-			.commentCount(commentCount)
+			.writerNickname(post.getWriter().getNickname())
+			.writerProfileImageUrl(post.getWriter().getProfileImageUrl())
+			.registrationDate(TimeFormatUtil.convertDateTime(post.getRegistrationDate()))
+			.lastModifiedDate(TimeFormatUtil.convertDateTime(post.getLastModifiedDate()))
 			.build();
 	}
 }

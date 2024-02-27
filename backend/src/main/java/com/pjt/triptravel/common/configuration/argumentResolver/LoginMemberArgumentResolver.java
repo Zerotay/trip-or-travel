@@ -1,7 +1,6 @@
 package com.pjt.triptravel.common.configuration.argumentResolver;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 
 import org.springframework.core.MethodParameter;
 import org.springframework.web.bind.support.WebDataBinderFactory;
@@ -11,8 +10,7 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 
 import com.pjt.triptravel.common.configuration.annotation.Login;
 import com.pjt.triptravel.common.exception.UserNotFoundException;
-import com.pjt.triptravel.common.session.SessionConst;
-import com.pjt.triptravel.member.entity.Member;
+import com.pjt.triptravel.common.jwt.JwtTokenUtils;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,12 +32,11 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
 		log.info("resolveArgument 실행");
 
 		HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
-		HttpSession session = request.getSession();
-		Member loginMember = (Member)session.getAttribute(SessionConst.LOGIN_MEMBER);
-		if (loginMember == null) {
+		String accessToken = JwtTokenUtils.resolveAccessToken(request);
+
+		if (accessToken == null) {
 			throw new UserNotFoundException();
 		}
-		log.info("login Member={}, {}", loginMember.getId(), loginMember);
-		return loginMember.getId();
+		return JwtTokenUtils.extractMemberId(accessToken);
 	}
 }
